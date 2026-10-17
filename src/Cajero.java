@@ -30,6 +30,29 @@ public class Cajero extends javax.swing.JFrame {
             modeloTabla.addRow(new Object[]{String.format("$%,d", d), cantidad, String.format("$%,d", total)});
         }
     }
+    private void manejarDigito(String digito) {
+        if (!digito.matches("[0-9]")) {
+            return;
+        }
+        if (textoIngresado.length() >= 7) {
+            txtPantalla.setText("AVISO: Límite máximo alcanzado.");
+            return;
+        }
+        textoIngresado += digito;
+        txtPantalla.setText(textoIngresado);
+    }
+
+    private void limpiarPantalla() {
+        textoIngresado = "";
+        txtPantalla.setText("");
+    }
+
+    private void retroceso() {
+        if (textoIngresado.length() > 0) {
+            textoIngresado = textoIngresado.substring(0, textoIngresado.length() - 1);
+            txtPantalla.setText(textoIngresado);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
