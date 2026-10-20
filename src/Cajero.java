@@ -61,55 +61,66 @@ public class Cajero extends javax.swing.JFrame {
         
         int monto = Integer.parseInt(textoIngresado);
         
-        if (monto % 10000 != 0) {
-            txtPantalla.setText("El monto debe ser múltiplo de 10000");  // se verifica que sea múltiplo de 10000
+        if (monto < 10000 || monto > 1000000) {    // para verificar los limites del cajero
+            txtPantalla.setText("Error: Minimo 10,000\ny maximo 1,000,000");
             return;
         }
         
-        int b100 = billetes.get(100000);
-        int b50 = billetes.get(50000);    //Se saca cuántos billetes hay en el inventario actual usando la variable billetes
+        if (monto % 10000 != 0) {     // para verificar que sea multiplo de 10 mil
+            txtPantalla.setText("El monto debe ser multiplo de 10,000");
+            return;
+        }
+        
+        int b100 = billetes.get(100000);   //para traer la cantidad de billetes actuales del hashmap
+        int b50 = billetes.get(50000);
         int b20 = billetes.get(20000);
         int b10 = billetes.get(10000);
         
+        int usar100 = 0, usar50 = 0, usar20 = 0, usar10 = 0;
         int aux = monto;
         
-        int usar100 = aux / 100000;     //para ver cuántos billetes de 100 mil necesito y se pueden usar
-        if (usar100 > b100) {    
-            usar100 = b100;
+        if (monto == 50000) {   //son reglas especiales para ciertos montos
+            usar20 = 2;
+            usar10 = 1;
+            aux = 0;
+        } else if (monto == 100000) {
+            usar50 = 1;
+            usar20 = 2;
+            usar10 = 1;
+            aux = 0;
+        } else if (monto > 100000) {
+            usar50 = 1;
+            usar20 = 2;
+            usar10 = 1;
+            aux = monto - 100000;
+            
+            int e100 = aux / 100000; usar100 += e100; aux -= e100 * 100000;   // es para completar lo que falta con la menor cantidad de billetes
+            int e50 = aux / 50000;   usar50 += e50;   aux -= e50 * 50000;
+            int e20 = aux / 20000;   usar20 += e20;   aux -= e20 * 20000;
+            int e10 = aux / 10000;   usar10 += e10;   aux -= e10 * 10000;
+        } else {
+            int e100 = aux / 100000; usar100 += e100; aux -= e100 * 100000;
+            int e50 = aux / 50000;   usar50 += e50;   aux -= e50 * 50000;
+            int e20 = aux / 20000;   usar20 += e20;   aux -= e20 * 20000;
+            int e10 = aux / 10000;   usar10 += e10;   aux -= e10 * 10000;
         }
-        aux = aux - (usar100 * 100000);
         
-        int usar50 = aux / 50000;      //para ver cuántos billetes de 50 mil hay
-        if (usar50 > b50) {
-            usar50 = b50;
-        }
-        aux = aux - (usar50 * 50000);
-        
-        int usar20 = aux / 20000;     //para ver cuántos billetes de 20 mil hay
-        if (usar20 > b20) {
-            usar20 = b20;
-        }
-        aux = aux - (usar20 * 20000);
-        
-        int usar10 = aux / 10000;
-        if (usar10 > b10) {
-            usar10 = b10;
-        }
-        aux = aux - (usar10 * 10000);
-        
-        if (aux > 0) {          //Si sobra dinero es porque no se completa con los billetes que hay
-            txtPantalla.setText("No hay suficientes billetes");
+        if (aux > 0 || usar100 > b100 || usar50 > b50 || usar20 > b20 || usar10 > b10) {  // es para validar si el cajero tiene suficientes billetes
+            txtPantalla.setText("Fondos insuficientes\no no hay suficientes billetes");
             return;
         }
         
-        billetes.put(100000, b100 - usar100);      //es para restar los billetes del inventario real
+        billetes.put(100000, b100 - usar100);    //para actualizar el hashmap restando los billetes usados
         billetes.put(50000, b50 - usar50);
         billetes.put(20000, b20 - usar20);
         billetes.put(10000, b10 - usar10);
         
-        actualizarTabla();       //para actualizar la tabla y que se vea el cambio
+        actualizarTabla();  //para actualizar la tabla
         
-        txtPantalla.setText("Retiro exitoso: $" + monto);
+        txtPantalla.setText("Retiro exitoso: $" + monto + "\n" +    // aqui se muestra el resultado en pantalla
+                            "Billetes entregados:\n" +
+                            "- 100k: " + usar100 + " | 50k: " + usar50 + "\n" +
+                            "- 20k: " + usar20 + "  | 10k: " + usar10);
         textoIngresado = "";
     }
     @SuppressWarnings("unchecked")
