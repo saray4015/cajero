@@ -34,14 +34,15 @@ public class Cajero extends javax.swing.JFrame {
         if (!digito.matches("[0-9]")) {
             return;
         }
-        if (textoIngresado.length() >= 7) {
-            txtPantalla.setText("AVISO: Límite máximo alcanzado.");
+        if (textoIngresado.length() >= 8) {
+            txtPantalla.setText("Limite maximo alcanzado.");
             return;
         }
         textoIngresado += digito;
-        txtPantalla.setText(textoIngresado);
+        
+        txtPantalla.setText(ponerPuntos(textoIngresado)); // Muestra en la pantalla el numero con punto
     }
-
+    
     private void limpiarPantalla() {
         textoIngresado = "";
         txtPantalla.setText("");
@@ -50,7 +51,11 @@ public class Cajero extends javax.swing.JFrame {
     private void retroceso() {
         if (textoIngresado.length() > 0) {
             textoIngresado = textoIngresado.substring(0, textoIngresado.length() - 1);
-            txtPantalla.setText(textoIngresado);
+            if (textoIngresado.isEmpty()) {
+                txtPantalla.setText("");
+            } else {
+                txtPantalla.setText(ponerPuntos(textoIngresado));
+            }
         }
     }
     private void retirarDinero() {
@@ -117,11 +122,16 @@ public class Cajero extends javax.swing.JFrame {
         
         actualizarTabla();  //para actualizar la tabla
         
-        txtPantalla.setText("Retiro exitoso: $" + monto + "\n" +    // aqui se muestra el resultado en pantalla
+        txtPantalla.setText("Retiro exitoso: $" + ponerPuntos(String.valueOf(monto)) + "\n" +    // aqui se muestra el resultado en pantalla
                             "Billetes entregados:\n" +
-                            "- 100k: " + usar100 + " | 50k: " + usar50 + "\n" +
-                            "- 20k: " + usar20 + "  | 10k: " + usar10);
+                            " 100k: " + usar100 + " | 50k: " + usar50 + "\n" +
+                            " 20k: " + usar20 + "  | 10k: " + usar10);
         textoIngresado = "";
+    }
+    private String ponerPuntos(String texto) {
+        if (texto.isEmpty()) return "";
+        long num = Long.parseLong(texto);
+        return java.text.NumberFormat.getInstance(new java.util.Locale("es", "CO")).format(num);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
