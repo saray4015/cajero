@@ -54,16 +54,64 @@ public class Cajero extends javax.swing.JFrame {
         }
     }
     private void retirarDinero() {
-        if (textoIngresado.isEmpty()) {
-            txtPantalla.setText("AVISO: Ingrese un valor.");
+        if (textoIngresado.equals("")) {
+            txtPantalla.setText("Ingrese un monto");
             return;
         }
         
-        int dinero = Integer.parseInt(textoIngresado);
+        int monto = Integer.parseInt(textoIngresado);
         
-        txtPantalla.setText("Retirando: $" + dinero);
+        if (monto % 10000 != 0) {
+            txtPantalla.setText("El monto debe ser múltiplo de 10000");  // se verifica que sea múltiplo de 10000
+            return;
+        }
+        
+        int b100 = billetes.get(100000);
+        int b50 = billetes.get(50000);    //Se saca cuántos billetes hay en el inventario actual usando la variable billetes
+        int b20 = billetes.get(20000);
+        int b10 = billetes.get(10000);
+        
+        int aux = monto;
+        
+        int usar100 = aux / 100000;     //para ver cuántos billetes de 100 mil necesito y se pueden usar
+        if (usar100 > b100) {    
+            usar100 = b100;
+        }
+        aux = aux - (usar100 * 100000);
+        
+        int usar50 = aux / 50000;      //para ver cuántos billetes de 50 mil hay
+        if (usar50 > b50) {
+            usar50 = b50;
+        }
+        aux = aux - (usar50 * 50000);
+        
+        int usar20 = aux / 20000;     //para ver cuántos billetes de 20 mil hay
+        if (usar20 > b20) {
+            usar20 = b20;
+        }
+        aux = aux - (usar20 * 20000);
+        
+        int usar10 = aux / 10000;
+        if (usar10 > b10) {
+            usar10 = b10;
+        }
+        aux = aux - (usar10 * 10000);
+        
+        if (aux > 0) {          //Si sobra dinero es porque no se completa con los billetes que hay
+            txtPantalla.setText("No hay suficientes billetes");
+            return;
+        }
+        
+        billetes.put(100000, b100 - usar100);      //es para restar los billetes del inventario real
+        billetes.put(50000, b50 - usar50);
+        billetes.put(20000, b20 - usar20);
+        billetes.put(10000, b10 - usar10);
+        
+        actualizarTabla();       //para actualizar la tabla y que se vea el cambio
+        
+        txtPantalla.setText("Retiro exitoso: $" + monto);
+        textoIngresado = "";
     }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -261,7 +309,7 @@ public class Cajero extends javax.swing.JFrame {
     }//GEN-LAST:event_btn3ActionPerformed
 
     private void btn4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4ActionPerformed
-    manejarDigito("3");
+    manejarDigito("4");
     }//GEN-LAST:event_btn4ActionPerformed
 
     private void btn5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5ActionPerformed
